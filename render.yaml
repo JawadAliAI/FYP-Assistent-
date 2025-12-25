@@ -2,6 +2,7 @@ services:
   - type: web
     name: fitbot-api
     env: python
+    runtime: python
     region: oregon
     plan: free
     branch: main
@@ -10,4 +11,6 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
     healthCheckPath: /health
