@@ -556,44 +556,20 @@ async def list_all_exercises():
 # ==================== TTS & STT ====================
 @app.post("/tts")
 async def text_to_speech(req: TTSRequest):
-    """Convert text to speech"""
-    try:
-        clean_text = clean_text_for_tts(req.text)
-        tmp_mp3 = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-        tts = gTTS(text=clean_text, lang=req.language_code)
-        tts.save(tmp_mp3.name)
+    """Convert text to speech - Requires FFmpeg"""
+    return JSONResponse({
+        "error": "TTS feature requires FFmpeg which is not available in this deployment",
+        "message": "Please use browser's built-in speech synthesis or deploy with FFmpeg support",
+        "text": req.text
+    }, status_code=501)
 
-        tmp_wav = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-        subprocess.run(
-            ["ffmpeg", "-y", "-i", tmp_mp3.name, "-ar", "44100", "-ac", "2", tmp_wav.name],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
-        os.remove(tmp_mp3.name)
-        return FileResponse(tmp_wav.name, media_type="audio/wav", filename="speech.wav")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"TTS Error: {str(e)}")
-
-recognizer = sr.Recognizer()
 @app.post("/stt")
 async def speech_to_text(file: UploadFile = File(...)):
-    """Convert speech to text"""
-    try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(await file.read())
-            tmp_path = tmp.name
-        
-        with sr.AudioFile(tmp_path) as source:
-            audio_data = recognizer.record(source)
-            transcript = recognizer.recognize_google(audio_data)
-        
-        os.remove(tmp_path)
-        return JSONResponse({"transcript": transcript})
-    except sr.UnknownValueError:
-        raise HTTPException(status_code=400, detail="Could not understand audio")
-    except sr.RequestError as e:
-        raise HTTPException(status_code=503, detail=f"Speech recognition service error: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"STT Error: {str(e)}")
+    """Convert speech to text - Requires FFmpeg"""
+    return JSONResponse({
+        "error": "STT feature requires FFmpeg which is not available in this deployment",
+        "message": "Please use browser's built-in speech recognition or deploy with FFmpeg support"
+    }, status_code=501)
 
 # ==================== HEALTH CHECK ====================
 @app.get("/health")
