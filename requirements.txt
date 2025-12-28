@@ -5,20 +5,11 @@ python-dotenv==1.0.0
 python-multipart==0.0.6
 pydantic==2.4.2
 
-# AI/ML APIs
+# AI Chat
 groq==0.4.2
 
-# Whisper for Speech-to-Text (OpenAI)
-openai-whisper==20231117
-
-# PyTorch (CPU only for smaller size on Render)
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.1.0+cpu
-torchaudio==2.1.0+cpu
-
-# Piper TTS for Text-to-Speech
-piper-tts==1.2.0
-
-# Dependencies
+# Lightweight Audio (No heavy local models)
+gTTS==2.5.1
+SpeechRecognition==3.10.1
+pydub==0.25.1
 numpy<2.0.0
-soundfile==0.12.1
