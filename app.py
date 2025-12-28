@@ -32,23 +32,38 @@ except Exception as e:
     print(f"Error initializing Groq client: {e}")
     groq_client = None
 
+import gc
+
 # Initialize Whisper Global Variable
 whisper_model = None
 whisper_model_size = os.getenv("WHISPER_MODEL_SIZE", "tiny")
 
 def get_whisper_model():
-    """Lazy load Whisper model to save memory on startup"""
+    """Lazy load Whisper model and ensure it fits in memory"""
     global whisper_model
     if whisper_model is None:
         print(f"Loading Whisper '{whisper_model_size}' model...")
         device = "cuda" if torch.cuda.is_available() else "cpu"
         try:
+            # Force garbage collection before loading
+            gc.collect()
             whisper_model = whisper.load_model(whisper_model_size, device=device)
             print(f"✓ Whisper model loaded on {device}")
         except Exception as e:
             print(f"Error loading Whisper: {e}")
             return None
     return whisper_model
+
+def unload_whisper_model():
+    """Unload Whisper model to free up RAM"""
+    global whisper_model
+    if whisper_model:
+        del whisper_model
+        whisper_model = None
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        print("✓ Whisper model unloaded to free RAM")
 
 # Piper TTS settings
 # Auto-detect correct path based on environment
@@ -386,6 +401,9 @@ async def chat(request: ChatRequest):
 async def text_to_speech_piper(req: TTSRequest):
     """Convert text to speech using Piper TTS"""
     try:
+        # Prevent OOM by cleaning garbage before spawning subprocess
+        gc.collect()
+        
         clean_text = clean_text_for_tts(req.text)
         
         # Get absolute path to model
@@ -451,6 +469,9 @@ async def speech_to_text_whisper(file: UploadFile = File(...)):
         
         # Clean up
         os.remove(tmp_path)
+        
+        # Unload model to free RAM
+        unload_whisper_model()
         
         return JSONResponse({
             "transcript": full_text.strip(),
