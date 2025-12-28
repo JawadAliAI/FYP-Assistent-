@@ -8,8 +8,8 @@ pydantic==2.4.2
 # AI Chat
 groq==0.4.2
 
-# Lightweight Audio (No heavy local models)
-gTTS==2.5.1
+# Lightweight Audio
+edge-tts==6.1.9
 SpeechRecognition==3.10.1
 pydub==0.25.1
 numpy<2.0.0

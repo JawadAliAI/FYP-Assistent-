@@ -4,12 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from groq import Groq
-from gtts import gTTS
+import edge_tts  # Replaced gTTS with Edge TTS
 import speech_recognition as sr
 import os
 import json
 import tempfile
 import uuid
+import asyncio
 
 # Load environment variables
 load_dotenv()
@@ -41,7 +42,8 @@ class ChatRequest(BaseModel):
 
 class TTSRequest(BaseModel):
     text: str
-    voice: str = "en"  # gTTS uses language codes
+    # Edge TTS voices: en-US-AriaNeural, en-US-GuyNeural, etc.
+    voice: str = "en-US-AriaNeural" 
 
 # ==================== EXERCISE DATABASE (Simplified) ====================
 YOUTUBE_TUTORIALS = {
@@ -68,7 +70,7 @@ def health_check():
     return {
         "status": "healthy",
         "groq_connected": groq_client is not None,
-        "mode": "lightweight (gTTS + SpeechRecognition)"
+        "mode": "lightweight (EdgeTTS + SpeechRecognition)"
     }
 
 @app.post("/chat")
@@ -79,7 +81,7 @@ def chat(request: ChatRequest):
     try:
         # Construct messages
         messages = [{"role": "system", "content": TRAINER_SYSTEM_PROMPT}]
-        for msg in request.chat_history[-5:]: # Keep context short
+        for msg in request.chat_history[-5:]:
             if "role" in msg and "content" in msg:
                 messages.append(msg)
         messages.append({"role": "user", "content": request.message})
@@ -111,16 +113,16 @@ def chat(request: ChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/tts")
-def text_to_speech_gtts(req: TTSRequest):
-    """Convert text to speech using Google TTS (Online, Lightweight)"""
+async def text_to_speech_edge(req: TTSRequest):
+    """Convert text to speech using Edge TTS (Microsoft - Free & Unlimited)"""
     try:
         # Create temp file
         file_name = f"tts_{uuid.uuid4()}.mp3"
         file_path = os.path.join(tempfile.gettempdir(), file_name)
         
         # Generate Audio
-        tts = gTTS(text=req.text, lang='en', slow=False)
-        tts.save(file_path)
+        communicate = edge_tts.Communicate(req.text, req.voice)
+        await communicate.save(file_path)
         
         return FileResponse(
             file_path, 
@@ -128,11 +130,11 @@ def text_to_speech_gtts(req: TTSRequest):
             filename="speech.mp3"
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"gTTS Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"EdgeTTS Error: {str(e)}")
 
 @app.post("/stt")
 async def speech_to_text_google(file: UploadFile = File(...)):
-    """Convert speech to text using Google Speech Recognition (Online, Lightweight)"""
+    """Convert speech to text using Google Speech Recognition"""
     try:
         # Save uploaded file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
@@ -156,7 +158,6 @@ async def speech_to_text_google(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"STT Error: {str(e)}")
 
-# Add Tutorials endpoint
 @app.get("/tutorials")
 def list_tutorials():
     return {"exercises": list(YOUTUBE_TUTORIALS.keys())}
