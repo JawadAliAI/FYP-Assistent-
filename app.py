@@ -36,9 +36,13 @@ except Exception as e:
 print("Loading Whisper model...")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+# Use tiny model for Render (512MB RAM limit) or base for local with more RAM
+# Tiny model: ~75MB, Base model: ~140MB
+whisper_model_size = os.getenv("WHISPER_MODEL_SIZE", "tiny")  # tiny, base, small, medium, large
+
 try:
-    whisper_model = whisper.load_model("base", device=device)
-    print(f"✓ Whisper loaded on {device}")
+    whisper_model = whisper.load_model(whisper_model_size, device=device)
+    print(f"✓ Whisper '{whisper_model_size}' model loaded on {device}")
 except Exception as e:
     print(f"Error loading Whisper: {e}")
     whisper_model = None

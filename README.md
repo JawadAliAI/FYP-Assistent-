@@ -288,8 +288,11 @@ FYP-Assistent-/
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `GROQ_API_KEY` | Groq API key for AI chat | ✅ Yes | - |
+| `WHISPER_MODEL_SIZE` | Whisper model size (tiny/base/small) | Optional | `tiny` |
 | `PIPER_MODEL_PATH` | Path to Piper voice model | Optional | Auto-detected |
 | `PIPER_EXECUTABLE` | Piper binary path | Optional | `piper` |
+
+**Note**: For Render's free tier (512MB RAM), use `tiny` model. For local with more RAM, you can use `base` or `small`.
 
 ---
 
