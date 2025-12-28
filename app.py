@@ -16,8 +16,11 @@ import asyncio
 load_dotenv()
 
 # Initialize Groq client
+# Fallback to hardcoded key if env var is missing (Temporary Fix for Render)
+GROQ_KEY = os.getenv("GROQ_API_KEY", "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")
+
 try:
-    groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    groq_client = Groq(api_key=GROQ_KEY)
 except Exception as e:
     print(f"Error initializing Groq client: {e}")
     groq_client = None
