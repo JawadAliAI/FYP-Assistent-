@@ -32,20 +32,23 @@ except Exception as e:
     print(f"Error initializing Groq client: {e}")
     groq_client = None
 
-# Initialize Whisper
-print("Loading Whisper model...")
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Initialize Whisper Global Variable
+whisper_model = None
+whisper_model_size = os.getenv("WHISPER_MODEL_SIZE", "tiny")
 
-# Use tiny model for Render (512MB RAM limit) or base for local with more RAM
-# Tiny model: ~75MB, Base model: ~140MB
-whisper_model_size = os.getenv("WHISPER_MODEL_SIZE", "tiny")  # tiny, base, small, medium, large
-
-try:
-    whisper_model = whisper.load_model(whisper_model_size, device=device)
-    print(f"✓ Whisper '{whisper_model_size}' model loaded on {device}")
-except Exception as e:
-    print(f"Error loading Whisper: {e}")
-    whisper_model = None
+def get_whisper_model():
+    """Lazy load Whisper model to save memory on startup"""
+    global whisper_model
+    if whisper_model is None:
+        print(f"Loading Whisper '{whisper_model_size}' model...")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        try:
+            whisper_model = whisper.load_model(whisper_model_size, device=device)
+            print(f"✓ Whisper model loaded on {device}")
+        except Exception as e:
+            print(f"Error loading Whisper: {e}")
+            return None
+    return whisper_model
 
 # Piper TTS settings
 # Auto-detect correct path based on environment
@@ -425,12 +428,15 @@ async def text_to_speech_piper(req: TTSRequest):
         raise HTTPException(status_code=500, detail=f"Piper TTS Error: {str(e)}")
 
 # ==================== WHISPER STT ====================
+# ==================== WHISPER STT ====================
 @app.post("/stt")
 async def speech_to_text_whisper(file: UploadFile = File(...)):
     """Convert speech to text using Whisper"""
     try:
-        if not whisper_model:
-            raise HTTPException(status_code=503, detail="Whisper model not loaded")
+        # Lazy load Whisper model on first request
+        model = get_whisper_model()
+        if not model:
+            raise HTTPException(status_code=503, detail="Whisper model failed to load")
         
         # Save uploaded file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
@@ -438,7 +444,7 @@ async def speech_to_text_whisper(file: UploadFile = File(...)):
             tmp_path = tmp.name
         
         # Transcribe with Whisper
-        result = whisper_model.transcribe(tmp_path)
+        result = model.transcribe(tmp_path)
         
         # Extract transcript
         full_text = result["text"]
