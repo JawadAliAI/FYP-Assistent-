@@ -1,17 +1,12 @@
-# Render Blueprint for FitBot API
-# This file enables one-click deployment to Render
-
 services:
   - type: web
     name: fitbot-api
-    runtime: docker
-    plan: free
+    env: docker
     region: oregon
+    plan: free
     branch: main
-    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: GROQ_API_KEY
         sync: false
-      - key: PORT
-        value: 10000
-    autoDeploy: true
+    healthCheckPath: /health

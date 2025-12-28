@@ -53,21 +53,3 @@ data/
 
 # Secrets
 serviceAccountKey.json
-
-# Audio files (test outputs)
-*.wav
-*.mp3
-*.ogg
-test_*.wav
-test_tts_output.wav
-test_speech.wav
-
-# Piper TTS
-piper.exe
-piper
-models/*.onnx
-models/*.json
-!models/.gitkeep
-
-# Test outputs
-test_audio.wav

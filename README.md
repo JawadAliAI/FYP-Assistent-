@@ -1,381 +1,371 @@
-# 🏋️ FitBot AI - AI Fitness Assistant with Voice
+# 🏋️ FitBot API - AI Fitness Assistant Backend
 
-> **Intelligent Fitness Coach** powered by AI with natural voice interaction using Piper TTS and Whisper STT
+A conversational AI fitness coaching API powered by Groq's LLaMA model. Provides personalized workout plans, nutrition guidance, and YouTube tutorial recommendations through a RESTful API.
 
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Whisper](https://img.shields.io/badge/Whisper-OpenAI-412991?logo=openai&logoColor=white)](https://github.com/openai/whisper)
-[![Piper](https://img.shields.io/badge/Piper-TTS-FF6B6B)](https://github.com/rhasspy/piper)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+## 🚀 Features
 
----
-
-## ✨ Features
-
-- 🤖 **AI-Powered Coaching** - Personalized fitness advice using Groq's Llama 3.3 70B
-- 🎙️ **Voice Input** - Speak your questions using OpenAI Whisper STT
-- 🔊 **Voice Output** - Natural responses with Piper TTS
-- 📺 **YouTube Tutorials** - Curated exercise videos for 25+ exercises
-- 💪 **Custom Workout Plans** - Tailored routines based on your goals
-- 🌐 **RESTful API** - Easy integration with any frontend
-- 🐳 **Docker Ready** - Deploy anywhere with Docker
-- ☁️ **Render Optimized** - One-click deployment to Render
+- **Conversational AI Coach** - Natural, friendly fitness coaching conversations
+- **Dynamic Workout Plans** - Generates plans based on user's training days (3, 4, 5+ days)
+- **YouTube Tutorial Integration** - Automatic exercise tutorial recommendations
+- **Voice Support** - Text-to-Speech (TTS) and Speech-to-Text (STT) endpoints
+- **Personalized Guidance** - Adapts to user's goals, experience level, and equipment
+- **CORS Enabled** - Ready for frontend integration from any domain
 
 ---
 
-## 🚀 Quick Start
+## 📋 API Endpoints
 
-### Option 1: Automated Setup (Windows)
+### Core Endpoints
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/JawadAliAI/FYP-Assistent-.git
-cd FYP-Assistent-
-
-# 2. Run the setup script
-start_local.bat
-```
-
-The script will:
-- Create virtual environment
-- Install all dependencies
-- Download Piper voice models
-- Start the server at http://localhost:8000
-
-### Option 2: Manual Setup
-
-```bash
-# 1. Create virtual environment
-python -m venv venv
-
-# Windows
-.\venv\Scripts\activate
-
-# Linux/Mac
-source venv/bin/activate
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
-
-# 4. Run the server
-uvicorn app:app --reload --port 8000
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | API information and documentation |
+| `GET` | `/health` | Health check endpoint |
+| `GET` | `/docs` | Interactive API documentation (Swagger UI) |
+| `POST` | `/chat` | Main AI fitness chat endpoint |
+| `GET` | `/tutorials` | List all available exercises |
+| `GET` | `/tutorials/{exercise}` | Get tutorials for specific exercise |
+| `POST` | `/tts` | Text-to-speech conversion |
+| `POST` | `/stt` | Speech-to-text conversion |
 
 ---
 
-## 📋 Prerequisites
+## 🔧 Installation & Setup
 
-- **Python 3.11** or higher
-- **FFmpeg** (for audio processing)
-- **Groq API Key** - Free tier available at [console.groq.com](https://console.groq.com/keys)
-- **2GB RAM** minimum (for Whisper model)
+### Prerequisites
 
-### Installing FFmpeg
+- Python 3.11+
+- FFmpeg (for audio processing)
+- Groq API Key ([Get one here](https://console.groq.com/keys))
 
-**Windows:**
-```bash
-choco install ffmpeg
-```
+### Local Development
 
-**Mac:**
-```bash
-brew install ffmpeg
-```
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd assistent
+   ```
 
-**Linux:**
-```bash
-sudo apt install ffmpeg
-```
+2. **Install FFmpeg:**
+   
+   **Windows:**
+   ```bash
+   choco install ffmpeg
+   ```
+   
+   **macOS:**
+   ```bash
+   brew install ffmpeg
+   ```
+   
+   **Linux:**
+   ```bash
+   sudo apt-get update
+   sudo apt-get install ffmpeg portaudio19-dev
+   ```
 
----
+3. **Create virtual environment:**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   source venv/bin/activate
+   ```
 
-## 📡 API Endpoints
+4. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Health Check
-```http
-GET /health
-```
-Returns server status and component health.
+5. **Set up environment variables:**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env and add your Groq API key
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
 
-### Chat with FitBot
-```http
-POST /chat
-Content-Type: application/json
+6. **Run the server:**
+   ```bash
+   uvicorn app:app --reload --port 8000
+   ```
 
-{
-  "message": "I want to build muscle and lose fat",
-  "user_id": "user123",
-  "chat_history": []
-}
-```
-
-### Text-to-Speech (Piper)
-```http
-POST /tts
-Content-Type: application/json
-
-{
-  "text": "Hello! I am FitBot, your AI fitness trainer.",
-  "voice": "en_US-lessac-medium"
-}
-```
-Returns: Audio file (WAV format)
-
-### Speech-to-Text (Whisper)
-```http
-POST /stt
-Content-Type: multipart/form-data
-
-file: <audio.wav>
-```
-Returns: Transcribed text
-
-### Exercise Tutorials
-```http
-GET /tutorials                    # List all exercises
-GET /tutorials/{exercise_name}    # Get specific exercise
-```
+7. **Test the API:**
+   - Open http://localhost:8000 - API info
+   - Open http://localhost:8000/docs - Interactive documentation
 
 ---
 
 ## 🌐 Deploy to Render
 
-### Step 1: Push to GitHub
+### Quick Deploy (Recommended)
 
-```bash
-git add .
-git commit -m "Ready for Render deployment"
-git push origin main
-```
+1. **Push to GitHub:**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-github-repo-url>
+   git push -u origin main
+   ```
 
-### Step 2: Create Render Service
+2. **Deploy on Render:**
+   - Go to [Render Dashboard](https://dashboard.render.com/)
+   - Click **New +** → **Blueprint**
+   - Connect your GitHub repository
+   - Render will auto-detect `render.yaml`
+   - Add environment variable: `GROQ_API_KEY=your_key_here`
+   - Click **Apply**
 
-1. Go to [dashboard.render.com](https://dashboard.render.com)
-2. Click **"New +"** → **"Web Service"**
-3. Connect your GitHub repository
+3. **Your API is live!**
+   - URL: `https://fitbot-api.onrender.com`
+   - Test: `https://fitbot-api.onrender.com/health`
+
+### Manual Deploy
+
+If you prefer manual configuration:
+
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New +** → **Web Service**
+3. Connect your repository
 4. Configure:
-   - **Name**: `fitbot-api`
-   - **Runtime**: Docker
-   - **Region**: Choose closest to you
-   - **Instance**: Free (or paid for better performance)
-
-### Step 3: Set Environment Variable
-
-In Render dashboard, add:
-- **Key**: `GROQ_API_KEY`
-- **Value**: Your actual Groq API key from [console.groq.com](https://console.groq.com/keys)
-
-### Step 4: Deploy
-
-- Click **"Create Web Service"**
-- Wait 10-15 minutes for first build
-- Your API will be live at: `https://your-app-name.onrender.com`
-
-### Step 5: Verify Deployment
-
-Visit: `https://your-app-name.onrender.com/health`
-
-Expected response:
-```json
-{
-  "status": "healthy",
-  "groq_connected": true,
-  "whisper_loaded": true,
-  "piper_configured": true,
-  "device": "cpu",
-  "total_exercises": 25
-}
-```
-
-**📖 Detailed deployment guide:** See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)
+   - **Name:** `fitbot-api`
+   - **Environment:** Python 3
+   - **Build Command:**
+     ```bash
+     apt-get update && apt-get install -y ffmpeg portaudio19-dev && pip install -r requirements.txt
+     ```
+   - **Start Command:**
+     ```bash
+     sh start.sh
+     ```
+5. Add environment variable: `GROQ_API_KEY`
+6. Deploy!
 
 ---
 
-## 🧪 Testing
+## 📡 API Usage Examples
 
-### Interactive API Documentation
+### Chat Endpoint
 
-Visit http://localhost:8000/docs to test all endpoints interactively.
-
-### Automated Test Suite
-
+**Request:**
 ```bash
-python test_api.py
+curl -X POST "https://your-api.onrender.com/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "I want to lose weight",
+    "user_id": "user123",
+    "chat_history": []
+  }'
 ```
 
-This tests:
-- ✅ Server health
-- ✅ Chat functionality
-- ✅ TTS generation
-- ✅ STT transcription
-- ✅ Tutorial recommendations
+**Response:**
+```json
+{
+  "reply": "That's awesome! Losing weight is a great goal. Where will you be working out - at home or do you have access to a gym?",
+  "tutorials": [],
+  "chat_history": [
+    {"role": "user", "content": "I want to lose weight"},
+    {"role": "assistant", "content": "That's awesome! ..."}
+  ],
+  "message_count": 2
+}
+```
+
+### Get Exercise Tutorials
+
+**Request:**
+```bash
+curl "https://your-api.onrender.com/tutorials/squats"
+```
+
+**Response:**
+```json
+{
+  "exercise": "Squats",
+  "tutorials": [
+    "https://www.youtube.com/watch?v=ultWZbUMPL8",
+    "https://www.youtube.com/watch?v=gcNh17Ckjgg"
+  ],
+  "count": 2
+}
+```
+
+### Text-to-Speech
+
+**Request:**
+```bash
+curl -X POST "https://your-api.onrender.com/tts" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Great job on your workout!",
+    "language_code": "en"
+  }' \
+  --output speech.wav
+```
+
+---
+
+## 🔐 Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GROQ_API_KEY` | Your Groq API key for AI chat | ✅ Yes |
+| `PORT` | Server port (auto-set by Render) | ❌ No (default: 8000) |
+
+---
+
+## 🎯 Conversation Flow
+
+The AI follows a natural conversation pattern:
+
+1. **Greeting** - Welcomes the user
+2. **Goal** - Asks about fitness goal (weight loss, muscle gain, performance)
+3. **Location** - Home or gym?
+4. **Days** - How many days per week?
+5. **Injuries** - Any limitations?
+6. **Experience** - Beginner or experienced?
+7. **Plan** - Provides personalized workout plan matching their days
+
+**Example:**
+```
+User: "I want to build muscle"
+AI: "That's awesome! Where will you be working out?"
+User: "at home"
+AI: "Perfect! How many days per week can you commit?"
+User: "5 days"
+AI: "Wow, 5 days! Any injuries?"
+User: "no"
+AI: "Excellent! Are you a beginner or experienced?"
+User: "beginner"
+AI: *Provides 5-day workout plan with exercises and YouTube links*
+```
 
 ---
 
 ## 📁 Project Structure
 
 ```
-FYP-Assistent-/
-├── app.py                       # Main FastAPI application
-├── requirements.txt             # Python dependencies
-├── Dockerfile                   # Docker configuration
-├── .env.example                 # Environment template
-├── start_local.bat              # Windows setup script
-├── test_api.py                  # API test suite
-├── models/                      # Piper voice models (auto-downloaded)
-├── RENDER_DEPLOYMENT.md         # Deployment guide
-├── LOCAL_TESTING.md             # Local setup guide
-└── IMPLEMENTATION_SUMMARY.md    # Technical details
+assistent/
+├── app.py                  # Main FastAPI application
+├── requirements.txt        # Python dependencies
+├── start.sh                # Production start script
+├── render.yaml             # Render deployment config
+├── .env.example            # Environment template
+├── .gitignore              # Git ignore rules
+├── README.md               # This file
+└── frontend-standalone.html # Optional: Standalone frontend
 ```
-
----
-
-## 🎯 How It Works
-
-1. **User Input** → Text or voice message
-2. **Speech Recognition** → Whisper transcribes voice to text
-3. **AI Processing** → Groq's Llama 3.3 70B generates response
-4. **Tutorial Matching** → Finds relevant YouTube videos
-5. **Voice Synthesis** → Piper converts response to speech
-6. **Response Delivery** → Text + audio + tutorials returned
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-- **FastAPI** - Modern Python web framework
-- **Uvicorn** - ASGI server
-- **Groq** - LLM API (Llama 3.3 70B)
-
-### AI/ML
-- **Whisper** - OpenAI's speech recognition
-- **Piper TTS** - High-quality text-to-speech
-- **PyTorch** - ML framework
-
-### Audio Processing
-- **FFmpeg** - Audio conversion
-- **librosa** - Audio analysis
-- **soundfile** - Audio I/O
-
----
-
-## 📊 Performance
-
-### Local (CPU):
-- Chat response: ~2-3 seconds
-- Whisper transcription: ~5-10 seconds (30s audio)
-- Piper TTS: ~1-2 seconds per sentence
-
-### Local (GPU - CUDA):
-- Chat response: ~1-2 seconds
-- Whisper transcription: ~1-2 seconds (30s audio)
-- Piper TTS: ~1-2 seconds per sentence
-
-### Render Free Tier:
-- Cold start: ~30 seconds (first request after idle)
-- Warm requests: Similar to local CPU
-- Memory: 512MB (may struggle with long audio)
-
----
-
-## 🔐 Environment Variables
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `GROQ_API_KEY` | Groq API key for AI chat | ✅ Yes | - |
-| `WHISPER_MODEL_SIZE` | Whisper model size (tiny/base/small) | Optional | `tiny` |
-| `PIPER_MODEL_PATH` | Path to Piper voice model | Optional | Auto-detected |
-| `PIPER_EXECUTABLE` | Piper binary path | Optional | `piper` |
-
-**Note**: For Render's free tier (512MB RAM), use `tiny` model. For local with more RAM, you can use `base` or `small`.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Server won't start
-- Check Python version: `python --version` (need 3.11+)
-- Verify virtual environment is activated
-- Check `.env` file exists with valid API key
+### Build Fails on Render
 
-### Whisper not loading
-- Ensure 2GB+ RAM available
-- Check PyTorch installation: `pip install torch`
-- Try smaller model: change `base` to `tiny` in app.py
+**Issue:** FFmpeg installation fails  
+**Solution:** Ensure build command includes:
+```bash
+apt-get update && apt-get install -y ffmpeg portaudio19-dev && pip install -r requirements.txt
+```
 
-### Piper TTS fails
-- Verify Piper binary is installed
-- Check voice model exists in `models/` folder
-- Run `start_local.bat` to auto-download models
+### API Returns 503
 
-### FFmpeg errors
-- Install FFmpeg: `choco install ffmpeg` (Windows)
-- Verify: `ffmpeg -version`
+**Issue:** Groq client not initialized  
+**Solution:** Check that `GROQ_API_KEY` environment variable is set correctly in Render dashboard
 
-**📖 More troubleshooting:** See [LOCAL_TESTING.md](LOCAL_TESTING.md)
+### CORS Errors
+
+**Issue:** Frontend can't access API  
+**Solution:** The API allows all origins by default. If you need to restrict, update CORS settings in `app.py`
+
+### Voice Features Not Working
+
+**Issue:** TTS/STT endpoints fail  
+**Solution:** Ensure FFmpeg is installed. On Render, it's installed via the build command.
 
 ---
 
-## 📚 Documentation
+## 🔗 Frontend Integration
 
-- **[QUICK_START.md](QUICK_START.md)** - Quick reference guide
-- **[LOCAL_TESTING.md](LOCAL_TESTING.md)** - Local setup & testing
-- **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** - Deployment guide
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Technical details
+This is a backend-only API. To use it, you need a frontend. Options:
+
+1. **Use the included standalone frontend:**
+   - Deploy `frontend-standalone.html` to Netlify/Vercel
+   - Configure it to point to your Render API URL
+
+2. **Build your own frontend:**
+   - Connect to the `/chat` endpoint
+   - Display responses and tutorials
+   - Handle conversation state
+
+3. **Mobile app:**
+   - Use the API endpoints in your iOS/Android app
+   - Implement chat UI
+   - Integrate voice features
+
+---
+
+## 📊 API Rate Limits
+
+- **Groq Free Tier:** Check [Groq Console](https://console.groq.com/) for current limits
+- **Render Free Tier:** 
+  - Sleeps after 15 minutes of inactivity
+  - First request after sleep takes ~30 seconds
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This is a personal project, but suggestions are welcome!
 
 ---
 
-## 📄 License
+## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **OpenAI** - Whisper speech recognition
-- **Rhasspy** - Piper TTS engine
-- **Groq** - Fast LLM inference
-- **FastAPI** - Excellent web framework
+This project is for educational purposes.
 
 ---
 
-## 📞 Support
+## 🔗 Links
 
-- **Issues**: [GitHub Issues](https://github.com/JawadAliAI/FYP-Assistent-/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/JawadAliAI/FYP-Assistent-/discussions)
-
----
-
-## 🎉 What's Next?
-
-- [ ] Test locally with `start_local.bat`
-- [ ] Run test suite: `python test_api.py`
-- [ ] Deploy to Render
-- [ ] Integrate with your frontend
-- [ ] Add custom exercises
-- [ ] Implement user authentication
-- [ ] Add workout tracking
+- **Groq Console:** https://console.groq.com/
+- **Render Dashboard:** https://dashboard.render.com/
+- **FastAPI Docs:** https://fastapi.tiangolo.com/
+- **API Documentation:** `/docs` endpoint on your deployed API
 
 ---
 
-**Made with ❤️ for fitness enthusiasts**
+## ✨ Features in Detail
 
-*Get fit with AI! 💪🤖*
+### Conversational AI
+- Natural language understanding
+- Context-aware responses
+- Remembers conversation history
+- Friendly, motivating tone
+
+### Dynamic Workout Plans
+- Adapts to user's available training days
+- Customizes based on equipment (home/gym)
+- Adjusts for experience level
+- Considers injuries and limitations
+
+### YouTube Integration
+- Automatic tutorial recommendations
+- Exercise-specific video links
+- Form guidance resources
+
+### Voice Support
+- Text-to-Speech for AI responses
+- Speech-to-Text for voice input
+- Multiple language support (TTS)
+
+---
+
+**Happy Coding! 💪🚀**
+
+For questions or issues, check the `/docs` endpoint for interactive API documentation.
